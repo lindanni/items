@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>jquery实现分页插件</title>
+	<meta charset="utf-8">
+	<style>
+		*{
+			margin:0;
+			padding:0;
+			text-decoration: none;
+		}
+		.page{
+			width:500px;
+			height:100px;
+			margin:100px auto;
+		}
+		.page a{
+			display:inline-block;
+			color:blue;
+			height:25px;
+			line-height: 25px;
+			padding:0 10px;
+			border:1px solid #ddd;
+			margin: 0 2px;
+			border-radius:4px;
+		}
+		.page .disabled{
+			display:inline-block;
+			color:blue;
+			height:25px;
+			line-height: 25px;
+			padding:0 10px;
+			border:1px solid #ddd;
+			margin: 0 2px;
+			border-radius:4px;
+			color:black;
+		}
+
+		.current{
+			display:inline-block;
+			color:#fff;
+			height:25px;
+			line-height: 25px;
+			padding:0 10px;
+			border:1px solid #ddd;
+			margin: 0 2px;
+			border-radius:4px;
+			background:black;
+			opacity: 0.3;
+		}
+	</style>
+</head>
+<body>
+	<div class="page"></div>
+	<script src="js/jquery.js"></script>
+	<script src="js/demo.js"></script>
+	<script> //调用插件接口
+		//$.fn.extend();
+		$('.page').createPage({
+			pageCount:10,
+			current:2,
+			backFn:function(p){
+				console.log(p);
+			}
+		})
+	</script>
+</body>
+</html>

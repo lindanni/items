@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>canvas实现pc画板</title>
+	<meta charset="utf-8">
+	<style>	
+		*{
+			margin:0;
+			padding:0;
+			list-style:none;
+		}
+		body{
+			/*background:url('');*/
+		}
+		.wrapper{
+			margin:15px;
+		}
+		.wrapper canvas{
+			border:1px solid royalblue;
+			border-radius:25px;
+			box-shadow:10px 10px 5px #888;
+			margin-bottom:20px;
+		}
+		.wrapper .btn-list{
+			text-align:center;
+			width:1000px;
+		}
+		.wrapper .btn-list li{
+			display:inline-block;
+			margin-left:40px;
+		}
+		.wrapper .btn-list li input{
+			width:80px;
+			font-size:14px;
+			display:block;
+			text-align:center;
+			background:yellow;
+			color:#000;
+			border:none;
+			padding:10px 20px;
+			cursor:pointer;
+			border-radius:25px;
+			transition-duration:0.2s;
+		}
+		.wrapper .btn-list li input:hober{
+			border:1px solid rebeccapurple;
+			box-shadow:0px 12px 16px 0 rgba(0,0,0,0.2);
+		}
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<canvas class="cavs" width="1000px" height="500px"></canvas>
+		<ul class="btn-list">
+			<li><input type="color" id="colorBoard" value="colorBoard"></li>
+			<li><input type="button" id="clearBoard" value="清屏"></li>
+			<li><input type="button" id="eraser" value="橡皮"></li>
+			<li><input type="button" id="rescind" value="撤销"></li>
+			<li><input type="range" id="lineRuler" value="线条" min="1" max="30"></li>
+		</ul>
+	</div>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript">
+		var darwingLineObj={
+			cavs:$('.cavs'),
+			context:$('.cavs').get(0).getContext('2d'),
+			colorBoard:$('#colorBoard'),
+			lineRuler:$('#lineRuler'),
+			bool:false,
+			arrImg:[],
+			init:function(){
+				this.context.lineCap='round';//线条起始和结尾的样式
+				this.context.lineJoin='round';//转弯的样式
+				this.draw();
+				this.btnFn();
+			},
+			draw:function(){
+				var cavs=this.cavs,
+					self=this;
+					c_x=cavs.offset().left,
+					c_y=cavs.offset().top;
+					cavs.mousedown(function(e){
+						e=e||window.event;
+						self.bool=true;
+						var m_x=e.pageX-c_x,
+							m_y=e.pageY-c_y;
+						self.context.beginPath();
+						self.context.moveTo(m_x,m_y);
+						cavs.mousemove(function(e){
+							if(self.bool){
+								self.context.lineTo(e.pageX-c_x,e.pageY-c_y);
+								self.context.stroke();
+							}
+						})
+						cavs.mouseup(function(e){
+							self.context.closePath();
+							self.bool=false;
+						})
+						cavs.mouseleave(function(e){
+							self.context.closePath();
+							self.bool=false;
+						})
+						var imgData=self.context.getImageData(0,0,self.cavs[0].width,self.cavs[0].height);
+						self.arrImg.push(imgData);
+						console.log(self.arrImg);
+
+					})
+			},
+			btnFn:function(){
+				var self=this;
+				$('.btn-list').on('click',function(e){
+					e=e||window.event;
+					switch(e.target.id){
+						case 'clearBoard':
+							self.context.clearRect(0,0,self.cavs[0].width,self.cavs[0].height);
+							break;
+						case 'eraser':
+							self.context.strokeStyle="#fff";
+							break;
+						case 'rescind':
+							if(self.arrImg.length>0){
+								self.context.putImageData(self.arrImg.pop(),0,0);
+							}
+							break;
+
+					}
+				})
+				this.colorBoard.change(function(e){
+					self.context.strokeStyle=$(this).val();
+				})
+				this.lineRuler.change(function(e){
+					self.context.lineWidth=$(this).val();
+				})
+			}
+		}
+		darwingLineObj.init();
+	</script>
+</body>
+</html>

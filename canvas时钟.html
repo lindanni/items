@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>canvas时钟</title>
+	<meta charset="utf-8">
+	<style type="text/css">
+		canvas{
+			border:1px solid #000;
+			position:absolute;
+			top:50%;
+			left:50%;
+			margin-top:-250px;
+			margin-left:-250px;
+		}
+	</style>
+</head>
+<body>
+	<canvas width="500" height="500" id="myCanvas"></canvas>
+<script type="text/javascript">
+	var myCanvas=document.getElementById('myCanvas');
+	var ctx=myCanvas.getContext('2d');
+	//画笔颜色和宽度
+	ctx.strokeStyle='#00ffff';
+	ctx.lineWidth=17;
+	//阴影偏移量及颜色
+	ctx.shadowBlur=15;
+	ctx.shadowColor='#00ffff';
+	function renderTime(){
+		//获取当前时间
+		var date=new Date();
+		var today=date.toDateString();
+		var h=date.getHours();
+		var m=date.getMinutes();
+		var s=date.getSeconds();
+		var ms=date.getMilliseconds();
+		var rs=s+(ms/1000);
+		var gradient=ctx.createRadialGradient(250,250,5,250,250,300);
+		gradient.addColorStop(0,'#03303a');
+		gradient.addColorStop(1,'#000');
+		ctx.fillStyle=gradient;
+		ctx.fillRect(0,0,500,500);
+
+		ctx.beginPath();
+		ctx.arc(250,250,200,deg(270),deg((h*30)-90));
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.arc(250,250,170,deg(270),deg((m*6)-90));
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.arc(250,250,140,deg(270),deg((rs*6)-90));
+		ctx.stroke();
+		ctx.font='25px Helvetica';
+		ctx.fillStyle='rgba(0,255,255,1)';
+		ctx.fillText(today,175,250);
+		ctx.font='25px Helvetica';
+		ctx.fillStyle='rgba(0,255,255,1)';
+		h=('0'+h).slice(-2);
+		m=('0'+m).slice(-2);
+		s=('0'+s).slice(-2);
+		ctx.fillText(h+':'+m+':'+s+':'+ms,175,280);
+	}
+	setInterval(renderTime,40);
+	renderTime();
+	function deg(deg){
+		var f=Math.PI/180;
+		return	deg*f;
+	}
+</script>
+</body>
+</html>

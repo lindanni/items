@@ -1,0 +1,448 @@
+*{
+	margin:0;
+	padding:0;
+	list-style:none;
+	outline:none;
+	text-decoration:none;
+	font-family: tahoma, arial, "Hiragino Sans GB", 宋体, sans-serif;
+}
+body{
+	background-color:#f4f4f4;
+}
+.header{
+	width:100%;
+	height:35px;
+	background-color:#f5f5f5;
+	border-bottom: 1px solid #eee;
+}
+.content{
+	width:1190px;
+	margin:0 auto;
+}
+.left,
+.left li{
+	float:left;
+}
+.right,
+.right li{
+	float:right;
+}
+.content::after{
+	content:'';
+	display:block;
+	clear:both;  /*只能清除块元素的浮动*/
+}
+.header .content li{
+	height:35px;
+	width:80px;
+	text-align:center;
+	line-height:35px;
+}
+.header .content ul li a{
+	font-size:12px;
+	color:#3C3C3C;
+}
+.header .content ul li a:hover{
+	color:#ff5000;
+}
+.cup{
+	background-color:#fff;
+}
+.cup .cup-wrap{
+	height:97px;
+	width:1150px;
+	position:relative;
+	margin:0 auto;
+	padding-top:24px;
+	transition:width .2s;
+}
+.cup .cup-wrap .logo{
+	width:190px;
+	height:80px;
+	padding-top:8px;
+	float:left;
+}
+.cup .cup-wrap .logo a{
+	display:block;
+	width:142px;
+	height:0px;
+	background:url('../images/taobao-logo.png') 0 0 no-repeat;
+	background-size:142px 58px;
+	margin-left:22px;
+	padding-top:58px;
+	overflow:hidden;
+}
+.search{
+	margin-left: 218px;
+    margin-right: 145px;
+    background-color:transparent;
+}
+.search-tab{
+	height:22px;
+	margin-left:16px;
+}
+.search-tab .search-nav li{
+	float:left;
+	width:36px;
+	height:22px;
+	text-align:center;
+	line-height:22px;
+	margin-right:4px;
+	color:#F40;
+	cursor: pointer;
+}
+.search-tab .search-nav li:hover{
+	background-image: linear-gradient(to right,#ff9000 0,#ff5000 100%);
+	background-repeat:repeat-x;
+	color:#fff;
+	font-weight:700;
+	border-top-right-radius:6px;
+	border-top-left-radius:6px;
+}
+.search-panel{
+	position:relative;
+}
+.search-panel .search-button{
+	position:absolute;
+	right:0;
+	top:0;
+	width:74px;
+	height:40px;
+	line-height:40px;
+	text-align:center;
+	border-top-right-radius:20px;
+	border-bottom-right-radius:20px;
+	overflow:hidden;
+}
+.search-panel .search-button button{
+	font-size:18px;
+	font-weight:700;
+	color:#fff;
+	background-image: linear-gradient(to right,#ff9000 0,#ff5000 100%);
+	background-repeat:repeat-x;
+	cursor:pointer;
+	width:100%;
+	height:100%;
+	border:none;
+}
+.search-panel .search-input{
+	margin-right:74px;
+	border:2px solid #ff5000;
+	height:36px;
+	border-right:none;
+	border-top-left-radius:20px;
+	border-bottom-left-radius:20px;
+	overflow:hidden;
+}
+.search-panel .search-input input{
+	width:472px;
+	height:24px;
+	border:none;
+	padding:6px 0;
+	text-indent:10px;
+}
+.search-fn .search-code {
+	padding:5px 35px 0 0;
+}
+.search-fn .search-code li{
+	font-size:12px;
+	height:20px;
+	margin-right:4px;
+	float:left;
+	cursor:pointer;
+}
+.search-fn .search-code li:hover{
+	color:#F40;
+}
+.search-fn .search-code::after{
+	content:'';
+	display:block;
+	clear:both;
+}
+.code{
+	position:absolute;
+	top:24px;
+	right:0;
+}
+.code .code-wrap{
+	position:relative;
+}
+.code-kuang{
+	display:block;
+	width:74px;
+	height:88px;
+	border:1px solid #eee;
+	background-color:#fff;
+	cursor:pointer;
+	text-align:center;
+}
+.code-kuang .code-text{
+	color:#ff5000;
+	margin:4px auto 0;
+	font-size:12px;
+}
+.code-kuang .code-img img{
+	width:62px;
+	height:62px;
+	display:block;
+	margin:0 auto;
+}
+.code-close{
+	position:absolute;
+	top:0;
+	left:-16px;
+	width:14px;
+	height:14px;
+	border:1px solid #eee;
+}
+.code-close .close{
+	cursor: pointer;
+	display:block;
+	width:14px;
+	height:14px;
+	color:#DDD;
+	font-size:14px;
+	text-align:center;
+	line-height:12px;
+}
+.code-close .close:hover{
+	color:#3C3C3C;
+}
+.nav-wrap{
+	width:1150px;
+	margin:0 auto;
+	height:30px;
+	color:#fff;
+	line-height:30px;
+}
+.nav{
+	background-color:transparent;
+	background-image:linear-gradient(to right,#ff9000 0,#ff5000 100%);
+    background-repeat:repeat-x;
+}
+.nav-wrap h2{
+	width:190px;
+	float:left;
+	background:#ff5000;
+	font-size:16px;
+	text-align:center;
+}
+.nav-wrap .nav-hd li{
+	font-weight:700;
+	float:left;
+	padding:0 9px;
+	margin:0 3px;
+}
+.nav-wrap .nav-bd li{
+	font-weight:700;
+	font-size:14px;
+	float:left;
+	margin-left:7px;
+	padding:0 5px;
+}
+.nav-wrap ul .nav-pa:hover{
+	cursor:pointer;
+}
+.main{
+	width:1150px;
+	margin:0 auto;
+}
+.main::after{
+	content:'';
+	display:block;
+	clear:both;
+}
+.service{
+	background-color:#fff;
+	float:left;
+	width:190px;
+	height:522px;
+}
+.service-wrap{
+	border:1px solid #ff5000;
+	border-top:none;
+	padding-top:5px;
+	padding-bottom:3px;
+}
+.service-wrap .service-ul li{
+	font-size:14px;
+	height:32px;
+	width:145px;
+	font-weight:400;
+	padding-left:25px;
+	padding-right:19px;
+	color:#666;
+}
+.main .img{
+	float:left;
+	border:1px solid #ff5000;
+	margin-top:10px;
+	margin-left:10px;
+}
+.main .carousel{
+	width:520px;
+	height:278px;
+	border:1px solid #ff5000;
+}
+.main .ig{
+	width:520px;
+	height:228px;
+	border:1px solid #ff5000;
+}
+.main-right{
+	float:right;
+	margin-top:10px;
+	width:290px;
+	height:100%;
+	background-color:#fff;
+}
+.main-right .member{
+	height:132px;
+	padding:3px 0 10px 0;
+}
+.main-right .member .member-bd{
+	height:91px;
+	background:url('../images/taobao-member.png') 0 0 no-repeat;
+	background-size:100% 91px;
+}
+.main-right .member .member-fn{
+	height:40px;
+	padding-left:15px;
+	margin-top:2px;
+	overflow:hidden;
+}
+.main-right .member .member-fn .member-fnwrap{
+	height:25px;
+	margin-top:8px;
+}
+.main-right .member .member-fn .member-fnwrap a{
+	color:#fff;
+	display:block;
+	width:75px;
+	float:left;
+	text-align:center;
+	line-height:25px;
+	background-image: linear-gradient(to right,#ff5000 0,#ff6f06 100%);
+    background-repeat: repeat-x;
+    font-size:14px;
+    border-radius:4px;
+    margin-right:7px;
+    font-weight:700px;
+    cursor: pointer;
+    background-clip: padding-box;/*background-clip的属性还有：   (移动端)
+										content-box: 背景被裁剪到内容框的位置
+										border-box: 背景被裁剪到边距框的位置
+								*/
+}
+.main-right .inform{
+	display:block;
+	height:26px;
+	line-height:26px;
+	font-size:12px;
+	background:#ffe4dd;
+	cursor: pointer;
+	padding-left:82px;
+	color:#f40;
+}
+.main-right .message{
+	height:98px;
+	width:290px;
+	padding-top:10px;
+	background-color:#fff;
+}
+.main-right .message-nav{
+	color:#3c3c3c;
+	height:24px;
+	margin-top:4px;
+	margin-right:-2px;
+	overflow:hidden;
+	padding:0 8px;
+}
+.main-right .message .message-nav li{
+	float:left;
+	font-size:12px;
+	width:32px;
+	line-height:20px;
+	margin:0 11px;
+	text-align:center;
+}
+.main-right .message .message-nav li:hover{
+	border-bottom:2px solid #ff5000;
+}
+.main-right .message .message-bd .message-bdul{
+	margin:0 12px;
+	height:50px;
+	padding:9px 0 6px 0;
+	overflow:hidden;
+}
+.main-right .message .message-bd .message-bdul li{
+	width:130px;
+	height:25px;
+	line-height:25px;
+	float:left;
+	font-size:12px;
+	color:#3c3c3c;
+	cursor:pointer;
+}
+.main-right .message .message-bd .message-bdul li:hover{
+	color:#f40;
+}
+.main-right .func{
+	border-top:1px solid #f4f4f4;
+}
+.main-right .func .func-nav{
+	width:294px;
+	overflow:hidden;
+}
+.main-right .func .func-nav li{
+	width:71.5px;
+	height:75px;
+	float:left;
+	border:1px solid #f4f4f4;
+	border-top:transparent;
+	border-left:transparent;
+	font-size:12px;
+	color:#3c3c3c;
+	text-align:center;
+	border-bottom:1px solid #f40;
+}
+.main-right .func .func-nav li span{
+	display:inline-block;
+	width:24px;
+	height:24px;
+	margin-top:11px;
+}
+.main-right .func .func-nav li .span1{
+	background: url('../images/small-tubiao.png') 0 0 no-repeat;
+    background-size: 24px 597px;
+}
+.main-right .func .func-nav li .span2{
+	background: url('../images/small-tubiao.png') 0 -87px no-repeat;
+    background-size: 24px 597px;
+}
+.main-right .func .func-nav li .span3{
+	background: url('../images/small-tubiao.png') 0 -44px no-repeat;
+    background-size: 24px 597px;
+}
+.main-right .func .func-nav li .span4{
+	background: url('../images/small-tubiao.png') 0 -132px no-repeat;
+    background-size: 24px 597px;
+}
+.main-right .func .func-nav li p{
+	line-height:24px;
+}
+.main-right .func .func-nav li:hover{
+	border:0.5px solid #f40;
+
+}
+.main-right .func .func-nav:hover + .func-bd{
+	border:1px solid #f40;
+	border-top:none;
+}
+.main-right .func .func-nav li p:hover{
+	color:#f40;
+}
+.main-right .func .func-bd{
+	width:288px;
+	height:156px;
+}

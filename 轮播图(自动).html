@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>轮播图（自动）</title>
+	<meta chrset="utf-8">
+	<style>
+		*{
+			margin:0;
+			padding:0;
+		}
+		ul{
+			list-style:none;
+			width:1002px;
+			height:202px;
+			position:relative;
+		}
+		li{
+			float:left;
+			width:250px;
+			height:202px;
+			position:absolute;
+			top:0;
+			left:0;
+			transition: all 5s;
+		}	
+	</style>
+</head>
+<body>
+		<div style="width:250px;height:200px;border:1px solid black;overflow:hidden;margin:20px 50px;">
+		<ul>
+			<li>
+				<img width="250px" height="200px" src="images\猴子.jpg"/>
+			</li>
+			<li><img width="250px" height="200px" src="images\热气球.jpg"/></li>
+			<li><img width="250px" height="200px" src="images\笔.jpg"/></li>
+			<li><img width="250px" height="200px" src="images\西瓜.jpg"/></li>
+			</ul>
+		</div>
+	<script>
+		function getStyle(elem,prop){
+			if(window.getComputedStyle){
+				return window.getComputedStyle(elem,null)[prop];
+			}else{
+				return elem.currentStyle[prop];
+			}
+		}
+		var div=document.getElementsByTagName('div')[0];
+		var ul=document.getElementsByTagName('ul')[0];
+		var li=document.getElementsByTagName('li');
+		for(var i=0;i<li.length;i++){
+			li[i].style.left=i*250+'px';
+		}
+		var i=0;
+		setInterval(function (){
+					if(i<li.length){
+						for(var j=0;j<li.length;j++){
+							li[j].style.left=parseInt(getStyle(li[j],'left'))-250+'px';
+						}
+						li[i].style.display='none';
+						li[i].style.left=750+'px';	
+					}else{
+						i=-1;
+					}
+					li[i].style.display='list-item';
+					i++;				
+			},5000);
+	</script>
+</body>
+</html>

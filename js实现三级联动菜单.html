@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>js实现三级联动菜单</title>
+	<meta charset="utf-8">
+	<style>
+		*{
+			margin:0;
+			padding:0;
+			list-style:none;
+		}
+		body{
+			background-color:aliceblue;
+		}
+		.container{
+			margin:50px auto;
+			width:300px;
+		}
+		.row{
+			width:100%;
+			height:42px;
+			background-color:#fff;
+			border-radius:14px;
+			margin-top:10px;
+		}
+		.lable{
+			display:inline-block;
+			line-height:40px;
+			padding:0 10px;
+			color:#03A9F4;
+		}
+		.lable::after{
+			content:'|';
+			display:inline-block;
+			color:#ccc;
+			padding:0 0 0 15px;
+		}
+		.cont-sel{
+			display:inline-block;/*bfc(block format context 块级格式上下文)*/
+								/*分隔符    1.父级fontsize 0 2.margin-left负值 3.拉近标签距离*/
+			width:70%;
+			height:100%;
+			color:#383838;
+		}
+		.cont-sel select{
+			width:100%;
+			height:30px;
+			border-radius:5px;
+			border-color:aliceblue;
+		}
+	</style>
+</head>
+<body>
+	<ul class="container">
+		<li class="row">
+			<p class="lable">省会</p>
+			<div class="cont-sel"><select name="province" id="province"></select></div>
+		</li>
+		<li class="row">
+			<p class="lable">城市</p>
+			<div class="cont-sel"><select name="city" id="city"></select></div>
+		</li>
+		<li class="row">
+			<p class="lable">院校</p>
+			<div class="cont-sel"><select name="school" id="school"></select></div>
+		</li>
+	</ul>
+	<script src="js/jquery.js"></script>
+	<script>
+		var province=[["00","河南"],["01","浙江"]];
+		var city={"00":[["001","郑州市"],["002","开封市"],["003","洛阳市"],["004","安阳市"],["005","新乡市"],["006","商丘市"]],"01":[["007","杭州市"],["008","宁波市"],["009","温州市"],["010","嘉兴市"],["011","湖州市"],["012","绍兴市"]]};
+		var allschool={
+			"001":[[0,0,"中原工学院信息商务学院"],[0,1,"郑州大学"],[0,2,"河南工业大学"]],
+			"002":[[0,0,"河南大学"],[0,1,"黄河水利职业技术学院"],[0,2,"开封大学"]],
+			"007":[[0,0,"浙江大学"],[0,1,"浙江工业大学"],[0,2,"浙江理工大学"]],
+			"008":[[0,0,"宁波大学"],[0,1,"宁波工程学院"],[0,2,"宁波城市职业技术学院"]]
+		};
+ 		(function(){
+ 			var provinceNode=$('#province'),
+ 				cityNode=$('#city'),
+ 				schoolNode=$('#school');
+ 				var selectPstr='';
+ 				for(var i=0,len=province.length;i<len;i++){
+ 					selectPstr+="<option value="+province[i][0]+">"+province[i][1]+"</option>";
+ 				}
+ 				provinceNode.html(selectPstr);
+ 				var selectCstr='',
+ 					cityArr=city[provinceNode.val()];
+ 					for(var i=0,len=cityArr.length;i<len;i++){
+ 					selectCstr+="<option value="+cityArr[i][0]+">"+cityArr[i][1]+"</option>";
+ 				}
+ 				cityNode.html(selectCstr);
+ 				var schoolArr=allschool[cityNode.val()],
+ 					selectSstr='';
+ 					for(var i=0,len=schoolArr.length;i<len;i++){
+
+ 					selectSstr+="<option>"+schoolArr[i][2]+"</option>";
+ 				}
+ 				schoolNode.html(selectSstr);
+ 				provinceNode.change(function(){
+ 					var provinceCurrent=provinceNode.val();
+ 					var selectCstr='';
+ 					cityArr=city[provinceNode.val()];
+ 					for(var i=0,len=cityArr.length;i<len;i++){
+ 						selectCstr+="<option value="+cityArr[i][0]+">"+cityArr[i][1]+"</option>";
+ 					}
+ 					cityNode.html(selectCstr);
+ 					var schoolArr=allschool[cityNode.val()],
+ 					selectSstr='';
+ 					for(var i=0,len=schoolArr.length;i<len;i++){
+ 						selectSstr+="<option>"+schoolArr[i][2]+"</option>";
+ 					}
+ 					schoolNode.html(selectSstr);
+ 				})
+ 				cityNode.change(function(){
+ 					var schoolArr=allschool[cityNode.val()],
+ 					selectSstr='';
+ 					for(var i=0,len=schoolArr.length;i<len;i++){
+ 						selectSstr+="<option>"+schoolArr[i][2]+"</option>";
+ 					}
+ 					schoolNode.html(selectSstr);
+ 				})
+ 		})()
+	</script>
+</body>
+</html>

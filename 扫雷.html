@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>扫雷</title>
+	<meta charset="utf-8">
+	<style>
+		*{
+			margin:0;
+			padding:0;
+			list-style:none;
+		}
+		html,body{
+			width:100%;
+			height:100%;
+		}
+		.wrapper{
+			position:fixed;
+			top:0;
+			left:0;
+			height:700px;
+			width:100%;
+			background:radial-gradient(circle at center,#045,#002);
+		}
+		.wrapper .btn-start{
+			width:100px;
+			height:65px;
+			border-radius:35px;
+			position:absolute;
+			bottom:130px;
+			right:50px;
+			overflow:hidden;
+		}
+		.wrapper .btn-start button{
+			width:102%;
+			height:102%;
+			margin-left:-2px;
+			margin-top:-1px;
+			background:url('images/start-game.png') 0 0 no-repeat;
+			background-size:100% 100%;
+			border-radius:30px;
+			border:none;
+			box-shadow:0 0 14px #0cf inset;
+			cursor:pointer;
+		}
+		.wrapper .btn-start:hover{
+			width:120px;
+			height:85px;
+			transition:all 0.5s;
+		}
+		.wrapper .game-bg{
+			width:500px;
+			height:500px;
+			position:absolute;
+			top:50px;
+			left:50%;
+			margin-left:-250px;
+			transform:perspective(1000px) rotateX(45deg);
+			border:1px solid #fff;
+		}
+	.wrapper .message{
+		width:200px;
+		height:50px;
+		position:absolute;
+		top:30px;
+		left:50%;
+		margin-left:-100px;
+		color:#fff;
+		font-size:14px;
+		text-align:center;
+		line-height:50px;
+	}
+	.wrapper .alert-block{
+		width:100%;
+		height:100%;
+		position:absolute;
+		background-color:rgba(0,0,0,0.7);
+		display:none;
+	}
+	.wrapper .alert-block .alert-bg{
+		width:250px;
+		height:200px;
+		position:absolute;
+		top:0;
+		left:0;
+		right:0;
+		bottom:0;
+		margin:auto;
+		border-radius:15%;
+	}
+	.wrapper .alert-block .alert-bg .btn-close{
+		color:#fff;
+		width:10px;
+		height:10px;
+		position:absolute;
+		top:10px;
+		right:10px;
+		cursor:pointer;
+	}
+	.wrapper .game-bg .game-block{
+		width:49px;
+		height:49px;
+		float:left;
+		border-right:1px solid #fff;
+		border-bottom:1px solid #fff;
+		background-color:#00122f;
+		color:#fff;
+		font-size:20px;
+		line-height:49px;
+		text-align:center;
+	}
+	.wrapper .game-bg .show{
+		background:url('images/lei.png');
+		background-size:100% 100%;
+	}
+	.wrapper .game-bg .qi{
+		background:url('images/qi.png');
+		background-size:100% 100%;
+	}
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<div class="btn-start">
+			<button></button>
+		</div>
+		<div class="message">还剩的雷数：<span class="leinum">10</span> 个</div>
+		<div class="game-bg"></div>
+		<div class="alert-block">
+			<div class="alert-bg">
+				<div class="btn-close">X</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		/*
+			1.生成100个小格 i-j   生成10个雷
+			2.leftclick  
+				1）雷   出现雷的图片
+				2）数字  显示周围雷的个数
+				3）0     扩散
+				4）按过之后不能再按
+			3.rightclick
+				1)没有旗子  标记旗子
+				2)有旗子    取消旗子
+		 */
+	var gameBg=document.getElementsByClassName('game-bg')[0];
+	var btnStart=document.getElementsByClassName('btn-start')[0];
+	var alertBlock=document.getElementsByClassName('alert-block')[0];
+	var alertBg=document.getElementsByClassName('alert-bg')[0];
+	var btnClose=document.getElementsByClassName('btn-close')[0];
+	var leinum=10;
+	var count;
+	function init(){
+		leinum=10;
+		for(var i=0;i<10;i++){
+			for(var j=0;j<10;j++){
+				var divNum=document.createElement('div');
+				gameBg.appendChild(divNum);
+				divNum.classList.add('game-block');
+				divNum.setAttribute('id',i+'-'+j);
+			}
+		}
+		var gameBlock=document.getElementsByClassName('game-block');
+		for(var i=0;i<10;i++){
+			var num=Math.floor(Math.random()*100);
+			while(gameBlock[num].classList.contains('isLei')){
+				num=Math.floor(Math.random()*100);
+			}
+			gameBlock[num].classList.add('isLei');
+		}
+	}
+	btnClose.onclick=function(){
+		alertBlock.style.display='none';
+		gameBg.innerHTML='';
+	}
+	btnStart.onclick=function(){
+		init();
+	}
+	gameBg.oncontextmenu=function(){
+		return false;
+	}
+	gameBg.onmousedown=function(e){
+		e=e||window.event;
+		var target=e.target;
+		if(e.which==1){
+			if(target.classList.contains('qi')){
+				return;
+			}
+			leftclick(target);
+		}
+		if(e.which==3){
+			if(target.innerHTML!='')
+			{
+				return;
+			}
+			rightclick(target);
+		}
+	}
+	function leftclick(target){
+		var arr,
+			wi,
+			wj;
+		if(target && target.classList.contains('isLei')){
+				var lei=document.getElementsByClassName('isLei');
+				for(var i=0;i<lei.length;i++){
+					lei[i].classList.add('show');
+				}
+				alertBg.style.backgroundSize='100%'+' '+'100%';
+				alertBg.style.background='url('+'images/game-over1.png'+')';
+				setTimeout(function(){
+					alertBlock.style.display='block';
+				},700);
+		}else{
+			count=0;
+			arr=target.getAttribute('id').split('-');
+			wi=parseInt(arr[0]);
+			wj=parseInt(arr[1]);
+			for(var i=wi-1 ; i <=(wi+1) ; i++){
+				for(var j=wj-1 ; j <=(wj+1); j++){
+					var gb=document.getElementById(i+'-'+j);
+					if(gb && gb.classList.contains('isLei')){
+						count++;
+					}
+				}
+			}
+			target.innerHTML=''+count;
+			if(count==0){
+				for(var i=wi-1 ; i <=(wi+1) ; i++){
+					for(var j=wj-1 ; j <=(wj+1); j++){
+						var expendGb=document.getElementById(i+'-'+j);
+						if(expendGb && !expendGb.classList.contains('checked')){ /*												contains会返回boolean值*/
+							expendGb.classList.add('checked');
+							leftclick(expendGb);
+						}
+					}
+				}
+			}
+		}
+	}	
+	function rightclick(target){
+		target.classList.toggle('qi');
+		if(target.classList.contains('qi')){
+			if(target.classList.contains('isLei')){
+				leinum--;
+				console.log(leinum);
+			}
+		}else{
+				if(target.classList.contains('isLei')){
+				leinum++;
+			}
+		}
+		if(leinum==0){
+			alertBg.style.backgroundSize='100%'+' '+'100%';
+			alertBg.style.background='url('+'images/win1.png'+')';
+			setTimeout(function(){
+				alertBlock.style.display='block';
+			},700);
+		}
+	}	
+	var leiNu=document.getElementsByClassName('leinum')[0];
+	setInterval(function(){
+		leiNu.innerHTML=''+leinum;
+	},200);
+	</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>快速排序</title>
+	<meta charset="utf-8">
+</head>
+<body>
+	<script type="text/javascript">
+		function fibonacci(n){                    //斐波那契数列
+			if(n<3)
+			{
+				return 1;
+			}
+			return fibonacci(n-1)+fibonacci(n-2); //递归   
+		}
+		function Node(data,next){
+			this.data=data;
+			this.next=next;
+		}
+		//链表逆序
+		function setData(){
+			var root=new Node(1,null);
+			var nowNode=root;
+			for(var i=2;i<10;i++){
+				var temp=new Node(i,null);
+				nowNode.next=temp;
+				console.log(nowNode);
+				nowNode=temp;
+			}
+			return root;
+		}
+		var root=setData();
+		function reverse(node,pre){
+			if(node.next){	
+				node.next=pre;
+				return reverse(node.next,node);
+			}else{
+				node.next=pre;
+				return node;
+			}
+		}
+		console.log(reverse(root,null));
+		//快速排序
+		var arr=[6, 3, 5, 2, 9, 6, 3];
+		function quickSort(arr){
+			var left = [];
+			var right = [];
+			var key = arr[0];
+			var mid = [];
+			if(arr.length < 2){
+				return arr;
+			}
+			for(var i = 0; i<arr.length; i++){
+				if(arr[i] < key){
+					left.push(arr[i]);
+				}else if(arr[i] > key){
+					right.push(arr[i]);
+				}else{
+					mid.push(arr[i]);
+				}
+			}
+			return [].concat(quickSort(left),mid,quickSort(right));
+		}
+		//归并排序
+		function mergeSort(arr){
+			if(arr.length < 2){
+				return arr;
+			}
+			var mid=Math.floor(arr.length / 2);
+			var left=arr.slice(0,mid);
+			var right=arr.slice(mid);
+			return merge(mergeSort(left),mergeSort(right));
+		}
+		function merge(left,right){
+			var result = [];
+			while(left.length && right.length){
+				if(left[0]<right[0]){
+					var num=left.shift();//shift删除前面的第一项，pop是删除最后一项
+					result.push(num);
+				}else{
+					var num=right.shift();
+					result.push(num);
+				}
+			}
+			return result.concat(left,right);
+		}
+	</script>
+</body>
+</html>

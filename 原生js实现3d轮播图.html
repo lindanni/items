@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>原生js实现3d轮播图</title>
+	<style>
+		*{
+			margin:0;
+			padding:0;
+		}
+		li{
+			list-style:none;
+		}
+		.solid{
+			position:relative;
+			width:800px;
+			height:360px;
+			margin:150px auto;
+			box-shadow:1px 7px 25px #fd8fd9;/**/
+		}
+		.solid ul{
+			height:100%;
+			width:100%;
+		}
+		.solid ul li{
+			position:relative;
+			float:left;
+			transform:translateZ(-180px);
+			transform-style:preserve-3d;
+			width:8px;
+			height:100%;
+			transition:0.8s;
+		}
+		.solid ul li div{
+			position:absolute;
+			width:100%;
+			height:100%;
+
+		}
+		.solid ul li div:nth-child(1){
+			top:-360px;
+			background:url('images/风景4.jpg');
+			transform-origin:bottom;
+			transform:translateZ(180px) rotateX(90deg);
+		}
+		.solid ul li div:nth-child(2){
+			top:360px;
+			background:url('images/风景3.jpg');
+			transform-origin:top;
+			transform:translateZ(180px) rotateX(-90deg);
+		}
+		.solid ul li div:nth-child(3){
+			background:url('images/风景5.jpg');
+			transform:translateZ(180px);
+		}
+		.solid ul li div:nth-child(4){
+			background:url('images/风景2.jpg');
+			transform:translateZ(-180px) rotateX(180deg);
+		}
+		.solid ol{
+			width:150px;
+			position:absolute;
+			left:50%;
+			margin-left:-50px;
+			bottom:-70px;
+		}
+		.solid ol li{
+			float:left;
+			width:20px;
+			text-align:center;
+			border-radius:50%;
+			border:1px solid black;
+			background:#ccc;
+			margin-left:10px;
+			cursor:pointer;
+		}
+		.solid ol li.on{
+			color:red;
+		}
+	</style>
+</head>
+<body>
+	<div class="solid">
+		<ul class="oUl">
+		</ul>
+		<ol>
+			<li>1</li>
+			<li>2</li>
+			<li>3</li>
+			<li>4</li>
+		</ol>
+	</div>
+	<script>
+		var solid=document.getElementsByClassName('solid')[0];
+		var oUl=document.getElementsByClassName('oUl')[0];
+		var css=document.getElementsByTagName('style')[0];
+		var btn=document.querySelectorAll('ol li');
+		var n=0;
+		var timer;
+		creatDom();
+		function creatDom(){
+			var len=100,uHtml='',pHtml='',tHtml='';
+			var allWidth=parseInt(window.getComputedStyle(solid,null).width);
+			var width=allWidth/len;
+			for(var i=0;i<len;i++){
+				uHtml+='<li><div></div><div></div><div></div><div></div></li>';
+				pHtml+='.solid ul li:nth-child('+(i+1)+') div{background-position-x:'+(-i*width)+'px}';
+				tHtml+='.solid ul li:nth-child('+(i+1)+'){transition-delay:'+(0.3*i/len)+'s}';
+			}
+			oUl.innerHTML=uHtml;
+			css.innerHTML+=pHtml;
+			css.innerHTML+=tHtml;
+			bindEvent();
+			play();
+		}
+		function bindEvent(){
+			for(var i=0;i<4;i++){
+				btn[i].index=i;
+				btn[i].onclick=function(){
+					n=this.index;
+					for(var i=0;i<4;i++){
+						btn[i].className='';
+					}
+					this.className='on';
+					css.innerHTML+='.solid ul li{transform:translateZ(-180px) rotateX('+(n*90)+'deg);}';
+				}
+				btn[i].onmouseover=function(){
+					clearInterval(timer);
+				}
+				btn[i].onmouseout=function(){
+					play();
+				}
+			}
+		}
+		function play(){
+			clearInterval(timer);
+			timer=setInterval(function(){
+				n++;
+				n%=4;
+				for(var i=0;i<4;i++){
+					btn[i].className='';
+				}
+				btn[n].className='on';
+				css.innerHTML+='.solid ul li{transform:translateZ(-180px) rotateX('+(n*90)+'deg);}';
+			},3000);
+		}
+	</script>
+</body>
+</html>

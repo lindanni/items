@@ -1,0 +1,285 @@
+<html>
+<head>
+    <title>捡馅饼</title>
+</head>
+<body style="font-size: 12px">
+<!--用户界面-->
+<div id="Viewport" style="left: 100px; width: 800px; position: absolute; top: 0px; height: 600px;
+	 border-right: #ffffff 1px solid; border-top: #ffffff 1px solid;  
+	border-left: #ffffff 1px solid; border-bottom: #ffffff 1px solid;  
+	cursor:url(NormDervish.cur); background-image:url(Back.png);  
+	background-repeat:no-repeat;">
+	<li id="TimeInfo" style="left: 650px; color: #ffffff; position: absolute; top: 50px">
+	游戏时间：</li>
+	<li id="PlayerScrInfo" style="left: 650px; color: #ffffff; position: absolute; top: 100px">
+	当前得分：</li>
+	<li id ="SystemScrInfo" style="left: 650px; color: #ffffff; position: absolute; top: 150px">
+	系统总分：</li>
+	<li id="PercntShottedInfo" style="left: 650px; color: #ffffff; position: absolute; top: 200px">
+	分数比率：</li>
+	<div style="left: 25px; width: 68px; position: absolute; top: 296px; height: 16px;
+		background-color: #cc0000; z-index:0; vertical-align: middle; 
+		text-align: center;" id="DIV19" onclick="return GameEnd()">
+	结束游戏</div>
+	<div id="DIV18" style="left: 26px; width: 68px; position: absolute; top: 268px;
+		height: 16px; background-color: #00ff00; z-index:0; vertical-align: middle; 
+		text-align: center;" onclick="return GameStart()">
+	开始游戏</div>
+</div>
+<!--场景音乐音效音乐播放器-->
+<OBJECT id="backSoundPlayer" style="LEFT: 0px; WIDTH: 0px; TOP: 0px; HEIGHT: 0px" height=0 
+	width=0 classid=clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6 VIEWASTEXT>
+	<PARAM NAME="URL" VALUE="backsound.mp3">
+	<PARAM NAME="_cx" VALUE="10000">
+	<PARAM NAME="_cy" VALUE="10000">
+	<PARAM NAME="playCount" VALUE="10000">
+	<PARAM NAME="autoStart" VALUE="0">
+	<param name="BufferingTime" value="10">
+</OBJECT>
+<OBJECT id="FXSoundPlayer" style="LEFT: 0px; WIDTH: 0px; TOP: 0px; HEIGHT: 0px" height=0 
+	width=0 classid=clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6 VIEWASTEXT>
+	<PARAM NAME="URL" VALUE="Good.wav">
+	<PARAM NAME="_cx" VALUE="10000">
+	<PARAM NAME="_cy" VALUE="10000">
+	<PARAM NAME="playCount" VALUE="1">
+	<PARAM NAME="autoStart" VALUE="0">
+	<param name="BufferingTime" value="10">
+</OBJECT>
+
+<script language="javascript">
+	var imgSrc = new Array( "FlyHeart.gif", "ChocolatePie.ico",
+				 "CottonCandy.ico", "peachpai.ico", "Grimace.ico" );       		// 饼馅图片表
+	var coreScore = new Array( 100, 50, 30, 10, -200 );						// 馅饼分值表
+	var pieArray = null;										// 屏幕上的馅饼序列
+	var gameLoopListener = null;									// 侦听器表
+	var systemScore = 0;										// 系统总分
+	var playerScore = 0;										// 玩家总分
+	var escapeTimeMin = 0;										// 游戏时间：分
+	var escapeTimeScnd = 0;										// 游戏时间：秒
+	var gameLoopTimer;										// 游戏循环定时器
+	var gamingTimer;										// 游戏计时器
+	var isStarted = false;										// 游戏开始标记
+	function PieCore( _imgID )									// ＋饼馅类构造函数
+	{
+	    this.imgID = _imgID;									// IMG对象引用
+	    this.score = 0;										// 饼馅分值
+	    this.src = "";										// 饼馅图片地址
+	    this.initImg = function()									// ＋初始化图片
+	    {
+	        var rnd = Math.floor( Math.random() * 10 ) % 5;						// 随机选取 0～4 间的数作为索引
+	        if( document.getElementById( this.imgID ) == null ) return ;				// 如果获取图片对象不成功则返回 
+	        document.getElementById( this.imgID ).src = imgSrc[ rnd ];				// 设置饼馅图片
+	        this.src = imgSrc[ rnd ];								// 登记馅的图片地址
+	        this.score = coreScore[ rnd ];								// 登记分数
+	    }
+	}
+	function Pie( _divID, _imgID )									// ＋馅饼构造函数
+	{
+		this.divID = _divID;									// DIV对象引用
+		this.imgID = _imgID;									// Img对象引用                                                   
+		this.pieCore = null;									// 饼馅引用
+		this.x = 0;										// 坐标
+		this.y = 0;
+		this.moveTo = function( _x, _y )							// ＋移动状态
+		{
+			document.getElementById( this.divID ).style.marginLeft = _x;			// 设置X轴位置
+			document.getElementById( this.divID ).style.marginTop = _y;			// 设置Y轴位置
+			this.x = _x;									// 重新登记X、Y轴信息
+			this.y = _y;
+		}
+	    	this.addGameLoopEventListener = function( )             				// ＋添加游戏循环侦听器              
+		{
+			gameLoopListener.push( this );							// 往“游戏循环事件”侦听器列表填入当前饼的监听器地址
+		}
+		this.gameLoopEventListener = function( )							// ＋侦听游戏循环事件，刷新状态，主要的状态刷新在这里完成
+		{
+			if( Math.random() < 0.7 )								// 以0.7的概率 右移
+			{
+				if( this.pieCore.score<0 )							// 负分馅饼移动速度更快
+				{
+					this.moveTo( this.x+3, this.y+2 );
+				}
+				else
+				{
+					this.moveTo( this.x+1, this.y+1 );					// 正分值的饼移动速度正常
+				}
+			}
+			else											// 以0.3的概率向左移动
+			{
+				if( this.pieCore.score<0 )							// 负分馅饼移动速度更快
+				{
+					this.moveTo( this.x-3, this.y+2 );
+				}
+				else
+				{
+					this.moveTo( this.x-1, this.y+1 );					// 正分值的饼移动速度正常
+				}
+			}
+			if( this.y > 400 )									// 在竖直方向上的位置只要超出400像素就重位
+			{
+				this.reSet();
+			}
+		}
+		this.reSet = function()                                					// ＋复位状态，负责饼的信息复位 
+		{
+			this.pieCore = null;									// 断开当前饼馅
+			this.pieCore = new PieCore( this.imgID );						// 创建新馅
+			this.pieCore.initImg();									// 使新馅初使化
+			var rndX = Math.floor( Math.random() * 600 );						// 给新饼一个随机的X坐标
+			document.getElementById( this.divID ).style.marginLeft = rndX;	
+			document.getElementById( this.divID ).style.marginTop = 0;				// 将新饼放到屏幕最上端
+			this.x = rndX;										// x Anxis，登记新坐标
+			this.y = 0;										// y Anxis，登记新坐标
+			if( this.pieCore.score > 0 )								// 将新饼的分值添加到系统总分中
+			{
+				systemScore += this.pieCore.score;
+			}
+		}
+		this.addMouseEventListener = function()                 					// ＋添加鼠标事件侦听器
+		{
+			with( this )										// 将当前对象上下文传递到子级对象
+			{
+				document.getElementById( divID ).onclick = function()				// ＋鼠标单击事件处理
+				{
+					if( pieCore.score < 0 )							// 点击的不是正分饼返回，减分操作由其它侦听器完成
+					return;
+					playerScore += pieCore.score;						// 否则加分
+					FXSoundPlayer.URL="Good.wav";
+					FXSoundPlayer.controls.play();
+					reSet();								// 吃完当前饼馅后将“盘子”重新复位
+				}
+				document.getElementById( divID ).onmouseover = function()			// ＋鼠标移过事件处理程序
+				{
+					if( pieCore.score < 0 )							// 点击的不是正分饼则减分并复位“盘子”
+					{
+						playerScore += pieCore.score;					// 减分
+						FXSoundPlayer.URL="Haha.WAV";
+						FXSoundPlayer.controls.play();
+	                    			reSet();							// 复位
+					}
+				}
+			}
+		}          
+	} 
+	function InitResource()
+	{
+		for( i = 0; i< 18; i++ )
+		{
+			var div = document.createElement( "<div>" );						// 创建馅饼的DIV资源
+			div.setAttribute( "id", "Div"+i );							// 设置DIV的ID
+			div.style.visibility = "hidden";							// 隐藏DIV
+			div.style.position = "absolute";							// 绝对位置模式															
+			var img = document.createElement( "<img>" );						// 创建馅的IMG资源
+			img.setAttribute( "id", "Img"+i );							// 设置IMG的ID
+			div.appendChild( img );									// 添加给DIV
+			var viewport = document.getElementById( "Viewport" );					// 取得作为视口DIV引用
+			viewport.appendChild( div );								// 将馅饼DIV添加到视口
+			viewport.style.left=(document.body.clientWidth-800)/2 + "px";					// 设置视口位置于网页正中
+		}
+	}
+	function GameStart()												// ＋ 游戏开始，负责初始化
+	{
+		
+		if( isStarted )												// 如果已经开始就直接返回
+		{
+			return;
+		}
+		
+		
+		isStarted = true;											// 标记游戏已经开始
+		systemScore = 0;											// 系统总分								                                                       
+		playerScore = 0;											// 玩家总分
+		escapeTimeMin = 0;											// 游戏时间：分
+		escapeTimeScnd = 0;											// 游戏时间：秒
+		isEndGame = false;											// 是否结束游戏
+		pieArray = new Array();											// 屏幕上的馅饼序列
+		gameLoopListener = new Array();										// 侦听器表
+		
+	    for( i = 1; i<18; i++ )											// 屏上生成17个饼
+	    {
+	        divID = "Div" + i;											// 构建层DIV的ID
+	        imgID = "Img" + i;											// 构建图像对象的ID
+	        pie = new Pie( divID, imgID );										// 新建一个饼对象
+	        
+	        pie.reSet();	
+	        pie.addGameLoopEventListener();										// 这个饼需要监听“游戏循环”事件
+	        pie.addMouseEventListener();	// 这个饼需要监听鼠标事件
+									
+	        pieArray.push( pie );											// 添加到饼表
+	    }
+	    
+	    for( n in pieArray )											// 显示所有馅饼
+		{
+			var divObj = document.getElementById( pieArray[n].divID );
+			if( divObj != null )
+			{
+				divObj.style.visibility = "visible";
+			}
+		 }
+		 
+		 
+		backSoundPlayer.controls.play();									// 播放背景音乐
+	    gameLoopTimer = setInterval( GameLoop, 5 );									// 启动游戏循环
+	    gamingTimer = setInterval( Timer, 1000 );									// 启动游戏记时
+	}                                           
+    function GameLoop()													// ＋游戏循环，负责发送“游戏循环”事件，并刷新系统信息
+    {
+        for( n in gameLoopListener )
+        {
+            (gameLoopListener[n]).gameLoopEventListener();								// 通知侦听者
+            SystemScrInfo.firstChild.nodeValue = "系统总分："+systemScore;						// 刷新系统信息：系统总分
+            PlayerScrInfo.firstChild.nodeValue = "玩家总分："+playerScore;						// 刷新系统信息：玩家总分
+            PercntShottedInfo.firstChild.nodeValue = "分数比率："
+		+ Math.floor ((playerScore /systemScore*(escapeTimeMin+(escapeTimeScnd/60))) *100 ) + "%";		// 刷新系统信息：命中率
+            TimeInfo.firstChild.nodeValue = "游戏时间："+escapeTimeMin+"分"+escapeTimeScnd+"秒";			// 刷新系统信息：游戏记时
+        }
+    }
+    function GameEnd()													// ＋游戏结束操作
+    {
+		 clearInterval( gameLoopTimer );									// 移除计时器，游戏挂起
+		 clearInterval( gamingTimer );
+		 for( n in pieArray )											// 隐藏并删除所有馅饼
+		 {
+			var divObj = document.getElementById( pieArray[n].divID );
+			if( divObj != null )
+			{
+				divObj.style.visibility = "hidden";
+				divObj = null;
+			}
+		 }
+		 pieArray = null;											// 删除饼数组
+		 backSoundPlayer.controls.stop();									// 停止播放背景音乐
+		 isStarted = false;											// 标记游戏已经结束
+		 x = Math.floor( ( playerScore /systemScore*(escapeTimeMin+(escapeTimeScnd/60))) *100 );
+		 x2 = x;
+		 if( x < 60 )												// 成绩评估
+		 {
+			x = "不及格！！！";		 
+		 }
+		 else if( (x>=60)&&(x<70) )
+		 {
+			x = "及格！";	
+		 }
+		 else if( (x>=70)&&(x<80) )
+		 {
+			x = "良！！";	
+		 }
+		 else
+		 {
+			x = "牛！！！";	
+		 }
+		 alert( "你的积分为：" + playerScore + "\n系统总分为：" + systemScore + "\n"
+				+ "分数比率：" + x2 +"%\n成绩评估：" + x );
+    }
+    function Timer()												// ＋游戏记时器
+    {
+        if( ++escapeTimeScnd == 60 )										// 将秒转换为分
+        {
+            escapeTimeMin++;
+            escapeTimeScnd = 0;
+        }
+    }
+    InitResource();												// 初始化资源
+</script>
+</body>
+</html>

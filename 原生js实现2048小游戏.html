@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>原生js实现2048小游戏</title>
+	<meta charset="utf-8">
+	<style>
+		*{
+			margin:0;
+			padding:0;
+		}
+		#my2048{
+			margin-left:auto;
+			margin-right:auto;
+			background:#bbada0;
+			position: relative;;
+		}
+		#my2048 div{
+			position:absolute;
+			display: inline-block;
+			border:0px;
+		}
+	</style>
+</head>
+<body>
+	<div id="my2048"></div>
+	<script>
+		var colorMapping = {"0": "#ccc0b3", "2": "#eee4da", "4": "#ede0c8", "8": "#f2b179", "16": "#f59563", "32": "#f67e5f", "64": "#f65e3b", "128": "#edcf72", "256" : "#edcc61", "512": "#9c0", "1024": "#33b5e5", "2048": "#09c"};
+		var my2048;
+		var rows=3;
+		var cols=3;
+		var squareWidth=100;
+		var spacing=12;
+		var boardSet=[];
+		var squareSet=[];
+		var valueMap=[];
+		var directionEnum={left:{key:"left"},right:{key:"left"},up:{key:"top"},down:{key:"top"}};
+		var lock=0;
+		var isChange=false;
+		function generateNullMap(){
+			var newValueMap=[];
+			for(var i=0;i<rows;i++){
+				newValueMap[i]=[];
+				for(var j=0;j<cols;j++){
+					newValueMap[i][j]=null;
+				}
+			}
+			return newValueMap;
+		}
+		function getNewLocation(arr){
+			if(arr.length==0){
+				return [];
+			}
+			var temp=[];
+			temp.push(arr[0]);
+			for(var i=1;i<arr.length;i++){
+				if(arr[i].num==temp[temp.length-1].num && (!temp[temp.length-1].nextSquare)){
+					temp[temp.length-1].nextSquare=arr[i];
+				}else{
+					temp.push(arr[i]);
+				}
+			}
+			return temp;
+		}
+		function analysisActions(direction){
+			var newSquareSet=generateNullMap();
+			if(direction==directionEnum.left){
+				for(var i=0;i<squareSet.length;i++){
+					var temp=[];
+					for(var j=0;j<squareSet[i].length;j++){
+						if(squareSet[i][j]!=null){
+							temp.push(squareSet[i][j]);
+						}
+					}
+					temp=getNewLocation(temp);
+					for(var k=0;k<newSquareSet[i].length;k++){
+						if(temp[k]){
+							newSquareSet[i][k]=temp[k];
+						}
+					}
+				}
+			}else if(direction==directionEnum.right){
+				for(var i=0;i<squareSet.length;i++){
+					var temp=[];
+					for(var j=squareSet[i].length-1;j>=0;j--){
+						if(squareSet[i][j]!=null){
+							temp.push(squareSet[i][j]);
+						}
+					}
+					temp=getNewLocation(temp);
+					for(var k=newSquareSet[i].length-1;k>=0;k--){
+						if(temp[newSquareSet[i].length-1-k]){
+							newSquareSet[i][k]=temp[newSquareSet[i].length-1-k];
+						}
+					}
+				}
+			}else if(direction==directionEnum.up){
+				for(var j=0;j<squareSet[0].length;j++){
+					var temp=[];
+					for(var i=0;i<squareSet.length;i++){
+						if(squareSet[i][j]!=null){
+							temp.push(squareSet[i][j]);
+						}
+					}
+					temp=getNewLocation(temp);
+					for(var k=0;k<newSquareSet.length;k++){
+						if(temp[k]){
+							newSquareSet[k][j]=temp[k];
+						}
+					}
+				}
+			}else if(direction==directionEnum.down){
+				for(var j=0;j<squareSet[0].length;j++){
+					var temp=[];
+					for(var i=squareSet.length-1;i>=0;i--){
+						if(squareSet[i][j]!=null){
+							temp.push(squareSet[i][j]);
+						}
+					}
+					temp=getNewLocation(temp);
+					for(var k=newSquareSet.length-1;k>=0;k--){
+						if(temp[newSquareSet.length-1-k]){
+							newSquareSet[k][j]=temp[newSquareSet.length-1-k];
+						}
+					}
+				}
+			}
+			for(var i=0;i<newSquareSet.length;i++){
+				for(var j=0;j<newSquareSet[i].length;j++){
+					if(newSquareSet[i][j]==null){
+						continue;
+					}
+					newSquareSet[i][j].style.transition=direction.key+" 0.3s";
+					newSquareSet[i][j].style.left=(j+1)*spacing+j*squareWidth+'px';
+					newSquareSet[i][j].style.top=(i+1)*spacing+i*squareWidth+'px';
+					if(newSquareSet[i][j].nextSquare){
+						newSquareSet[i][j].nextSquare.style.transition=direction.key+" 0.3s";
+						newSquareSet[i][j].nextSquare.style.left=(j+1)*spacing+j*squareWidth+'px';
+						newSquareSet[i][j].nextSquare.style.top=(i+1)*spacing+i*squareWidth+'px';
+					}
+				}
+			}
+			return newSquareSet;
+		}
+		function refresh(newSquareSet){
+			squareSet=generateNullMap();
+			var newValueMap=generateNullMap();
+			for(var i=0;i<rows;i++){
+				for(var j=0;j<cols;j++){
+					if(newSquareSet[i][j]){
+						if(newSquareSet[i][j].nextSquare){
+							var temp=createSquare(newSquareSet[i][j].num*2,newSquareSet[i][j].offsetLeft,newSquareSet[i][j].offsetTop,i,j);
+							squareSet[i][j]=temp;
+							my2048.appendChild(temp);
+							my2048.removeChild(newSquareSet[i][j].nextSquare);
+							my2048.removeChild(newSquareSet[i][j]);
+						}else{
+							var temp=createSquare(newSquareSet[i][j].num,newSquareSet[i][j].offsetLeft,newSquareSet[i][j].offsetTop,i,j);
+							squareSet[i][j]=temp;
+							my2048.appendChild(temp);
+							my2048.removeChild(newSquareSet[i][j]);				
+						}
+						if(valueMap[i][j]!=newSquareSet[i][j].num){
+							isChange=true;
+						}
+						newValueMap[i][j]=squareSet[i][j].num;	
+					}else{
+						newSquareSet[i][j]=0;
+						newValueMap[i][j]=0;
+					}
+				}
+			}
+			valueMap=newValueMap;
+		}
+		function move(direction){
+			var newSquareSet=analysisActions(direction);
+			setTimeout(function(){
+				refresh(newSquareSet);
+				randSGenerateSquare();
+				console.log(valueMap);
+				lock=0;
+				for(var i=0;i<rows;i++){
+					for(var j=0;j<cols;j++){
+						for(var k=i-1;k<=i+1;k++){
+							for(var x=j-1;x<=j+1;x++){
+								if((k>=0&&k<rows)&&(x>=0&&x<cols)&&(k!=i||x!=j)&&(Math.abs(k-i+x-j)==1)){
+									console.log(valueMap[k][x],valueMap[i][j]);
+										if(valueMap[k][x]!=valueMap[i][j]&&valueMap[k][x]!=0&&valueMap[i][j]!=0){
+											lock++;
+											
+										}	
+								}
+							}
+						}
+						
+					}
+				}
+				console.log(lock);
+				if(lock==rows*rows*4-4*rows){
+					var max=valueMap[0][0];
+					for(var i=0;i<rows;i++){
+						for(var j=0;j<cols;j++){
+							if(valueMap[i][j]>max){
+								max=valueMap[i][j];
+							}
+						}
+					}
+					 setTimeout(function(){
+					 		alert("游戏结束  分数为"+max);
+					 		init();
+					 	},500);
+				}
+			},300);
+		}
+		function createSquare(value,left,top,row,col){
+			var temp=document.createElement("div");
+			temp.style.width=squareWidth+'px';
+			temp.style.height=squareWidth+'px';
+			temp.style.left=left+'px';
+			temp.style.top=top+'px';
+			temp.style.background=colorMapping[value];
+			temp.style.lineHeight=squareWidth+'px';
+			temp.style.textAlign="center";
+			temp.style.fontSize=0.4*squareWidth+"px";
+			temp.num=value;
+			temp.row=row;
+			temp.col=col;
+			if(value>0){
+				temp.innerHTML=""+value;
+			}
+			return temp;
+		}
+		function randSquareNum(){
+			 return Math.random()>0.5?2:4;
+		}
+		function randSGenerateSquare(){
+			for(;;){
+				var randRow=Math.floor(Math.random()*rows);
+				var randCol=Math.floor(Math.random()*cols);
+				if(valueMap[randRow][randCol]==0){
+					var tempLeft=randCol*squareWidth+(randCol+1)*spacing;
+					var tempTop=randRow*squareWidth+(randRow+1)*spacing;
+					var temp=createSquare(randSquareNum(),tempLeft,tempTop,randRow,randCol);
+					valueMap[randRow][randCol]=temp.num;
+					squareSet[randRow][randCol]=temp;
+					my2048.appendChild(temp);
+					return true;
+				}
+			}			
+		}
+		function initBoard(){
+			my2048.style.width=cols*squareWidth+(cols+1)*spacing+'px';
+			my2048.style.height=rows*squareWidth+(rows+1)*spacing+'px';
+			for(var i=0;i<rows;i++){
+				boardSet[i]=[];
+				squareSet[i]=[];
+				valueMap[i]=[];
+				for(var j=0;j<cols;j++){
+					var tempLeft=j*squareWidth+(j+1)*spacing;
+					var tempTop=i*squareWidth+(i+1)*spacing;
+					boardSet[i][j]=createSquare(0,tempLeft,tempTop,i,j);
+					squareSet[i][j]=null;
+					valueMap[i][j]=0;
+					my2048.appendChild(boardSet[i][j]);
+				}
+			}
+		}
+		function init(){
+			//创建面板
+			//初始化方块
+			//添加事件
+			my2048=document.getElementById("my2048");
+			initBoard();
+			randSGenerateSquare();
+			randSGenerateSquare();
+			document.addEventListener("keydown",function(ev){
+				switch(ev.key){
+					case "ArrowLeft":
+						move(directionEnum.left);
+						break;
+					case "ArrowRight":
+						move(directionEnum.right);
+						break;
+					case "ArrowUp":
+						move(directionEnum.up);
+						break;
+					case "ArrowDown":
+						move(directionEnum.down);
+						break;
+				}
+			});
+		}
+		window.onload=function(){
+			init();
+		}
+	</script>
+</body>
+</html>

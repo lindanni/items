@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>3d旋转木马轮播图</title>
+	<meta charset="utf-8">
+	<style type="text/css">
+		*{
+			margin:0;
+			padding:0;
+			font-size:0;
+		}
+		.wrapper{
+			position:relative;
+			transform-style:preserve-3d;
+			perspective:800px;
+			height:200px;
+			margin-top:200px;
+		}
+		.wrapper img{
+			position:absolute;
+			width:300px;
+			height:200px;
+			left:50%;
+			top:50%;
+			margin-left:-150px;
+			margin-top:-100px;
+			border-radius:8px;
+		}
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<img src="images/热气球.jpg" alt="">
+		<img src="images/猴子.jpg" alt="">
+		<img src="images/笔.jpg" alt="">
+		<img src="images/西瓜.jpg" alt="">
+		<img src="images/热气球.jpg" alt="">
+	</div>
+	<script src="js/jquery.js"></script>
+	<script>
+		(function($){
+			function Slider(ele,opt){
+				var d={
+					curDisplay:0,
+					autoPlay:false,
+					interval:2000
+				};
+				this.opts=$.extend({},d,opt);
+				this.init();
+			}
+			Slider.prototype.init=function(){
+				this.initMove();
+				this.bindEvent();
+			}
+			$.fn.extend({
+				slider:function(options){
+					new Slider(this,options);
+				}
+			})
+		})(jQuery)
+	</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style>
+		*{
+			margin:0;
+			padding:0;
+			font-family:"微软雅黑";
+		}
+		#outer{
+			width:320px;
+			height:480px;
+			background:url(img/game_bg.jpg) 0 0 no-repeat;
+			position:relative;
+			margin:0 auto;
+			margin-top:50px;
+		}
+		#scoring{
+			position:absolute;
+			left:65px;
+			top:13px;
+			color:#fff;
+			font-weight:bold;
+			font-size:16px;
+		}
+		#countDown{
+			width:180px;
+			height:16px;
+			position:absolute;
+			left:62px;
+			top:66px;
+			background:url(img/) 0 0 no-repeat;
+		}
+		#wolfs img{
+			position:absolute;
+		}
+		#menu{
+			position:absolute;
+			left:0;
+			top:200px;
+			width:320px;
+			text-align:center;
+		}
+		#start,#handle,#gameOver{
+			line-height:50px;
+			font-size:30px;
+			font-weight:bold;
+			color:#f60;
+			text-shadow: 0 0 5px #ffff00;
+			text-decoration: none;
+		}
+		#gameOver{
+			position:absolute;
+			left:0;
+			top:200px;
+			width:320px;
+			display:none;
+		}
+	</style>
+</head>
+<body>
+	<div class="outer">
+		<div class="scoring"></div>
+		<div class="countDown"></div>
+		<div class="wolfs">
+			<!-- <img src="img/" alt=""> -->
+		</div>
+		<div class="menu">
+			<a href="javascript:void(0)" class="start">开始</a>
+			<a href="javascript:void(0)" class="handle">游戏操作说明</a>
+		</div>
+		<div class="gameOver">game Over</div>
+	</div>
+	<script>
+		var startBtn=document.querySelector("#start");
+		var menu=document.querySelector("#menu");
+		var countDownDiv=document.querySelector("#countDown");
+		var wolfsDiv=document.querySelector("#wolfs");
+		var gameOverDiv=document.querySelector("#gameOver");
+		var socing=document.querySelector("#scoring");
+		var wolfStartArr=[
+			{left:'98px',top:'115px'},
+			{left:'17px',top:'160px'},
+			{left:'15px',top:'220px'},
+			{left:'30px',top:'293px'},
+			{left:'122px',top:'273px'},
+			{left:'207px',top:'295px'},
+			{left:'200px',top:'211px'},
+			{left:'187px',top:'141px'},
+			{left:'100px',top:'185px'}
+		];
+		var creatWolfTimer=null;
+		startBtn.onclick=function(){
+			menu.style.display='none';
+			var countDownWidth=countDownDiv.offsetWidth;
+			var timer=setInterval(function(){
+				countDownWidth--;
+				countDownDiv.style.width=countDownWidth+'px';
+				if(countDownWidth<=0){
+					clearInterval(timer);
+					clearInterval(creatWilfTimer);
+					gameOverDiv.style.display='block';
+				}
+			}，100);
+			var num=-999999;
+			creatWolfTimer=setInterval(function(){
+				var rand=randFn(0,wolfStartArr.length-1);
+				var randType=randFn(0,100);
+				if(num==rand){
+					return;
+				}
+				num=rand;
+				var wolf=new Image();
+				wolf.style.left=wolfStartArr[rand].left;
+				wolf.style.top=wolfStartArr[rand].top;
+				randType>90?wolf.type="x":wolf.type="h";
+				wolf.index=0;
+				wolf.src="img/"+wolf.type+wolf.index+".png";
+				wolfsDiv.appendChid(wolf);
+				wolf.upTimer=setInterval(function(){
+					wolf.index++;
+					if(wolf.index<=5){
+						wolf.src="img/"+wolf.type+wolf.index+".png";
+					}else{
+						clearInterval(wolf.upTimer);
+						wolf.downTimer=setInterval(function(){
+							wolf.index--;
+							if(wolf.index<=0){
+								clearInterval(wolf.downTimer);
+								wolfsDiv.removeChild(wolf);
+							}
+							wolf.src="img/"+wolf.type+wolf.index+".png";
+						},100);
+					}
+				},150);
+				var bol=true;
+				wolf.onclick=function(){
+					wolf.index=5;
+					if(bol==true){
+						clearInterval(wolf.upTimer);
+						clearInterval(wolf.downTimer);
+						wolf.hitTimer=setInterval(function(){
+							wolf.index++;
+							if(wolf.index>=9){
+								clearInterval(wolf.hitTimer);
+								wolfsDiv.removeChild(wolf);
+							}
+							wolf.src="img/"+wolf.type+wolf.index+".png";
+						},100);
+					}
+					bol==false;
+					if(wolf.type=="x"){
+						scoring.innerHTML=parseInt(scoring.innerHTML)-10;
+					}else if(wolf.type=="h"){
+						scoring.innerHTML=parseInt(scoring.innerHTML)+10;
+					}
+				}
+			},800);
+		}
+		function randFn(min,max){
+			return  parseInt(Math.random()*(max-min)+min);
+		}
+	</script>
+</body>
+</html>

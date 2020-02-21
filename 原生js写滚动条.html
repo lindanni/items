@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>原生js写滚动条</title>
+	<meta charset="utf-8">
+	<style>
+		*{
+			margin:0;
+			padding:0;
+			list-style:none;
+		}
+		.container{
+			width:380px;
+			height:400px;
+			font-size:24px;
+			margin:50px auto;
+			border:1px solid black;
+			position:relative;
+			overflow: hidden;
+		}
+		.contents{
+			position: absolute;
+			left:0;
+			top:0;
+			float:left;
+			width:350px;
+			background:#ccc;
+		}
+		ul{
+			position: absolute;
+			right:0;
+			top:0;
+			float:right;
+			width:28px;
+			height:398px;
+			border:1px solid #999;
+		}
+		.ico{
+			width:28px;
+			height:28px;
+			border:1px solid red;
+		}
+		.ico img{
+			width:100%;
+			height:100%;
+		}
+		.scroll{
+			position: relative;
+			height:342px;
+			width:100%;
+		}
+		.bar{
+			position: absolute;
+			left:0;
+			top:0;
+			width:100%;
+			height:0;
+			background:black;
+
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="contents">
+			滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，滚动条，
+		</div>
+		<ul>
+			<li class="ico up"><img src="images/up.png" alt=""></li>
+			<li class="scroll"><div class="bar"></div></li>
+			<li class="ico down"><img src="images/down.png" alt=""></li>
+		</ul>
+	</div>
+	<script>
+		(function(){
+			var drag=document.getElementsByClassName('bar')[0],
+				scroll=document.getElementsByClassName('scroll')[0],
+				container=document.getElementsByClassName('container')[0],
+				contents=document.getElementsByClassName('contents')[0],
+				ulscroll=document.getElementsByTagName('ul')[0];
+			var contentsH=contents.offsetHeight,
+				containerH=container.offsetHeight,
+				dragH=Math.floor(containerH/contentsH*scroll.offsetHeight);
+			drag.style.height=dragH+'px';
+			function init(){
+				scrollDrag(drag,scroll);//拖拽滑动
+				scrollWheel(container,drag);//滚轮滑动
+				scrollBtn(ulscroll,drag);//点击滑动
+			}
+			function scrollDrag(item,scroll){
+				item.onmousedown=function(e){
+					e=e ||window.event;
+					e.preventDefault();//取消事件的默认动作
+					var topY=e.pageY;//鼠标的位置到文档上边缘的位置
+					document.onmousemove=function(e){
+						e=e ||window.event;
+						e.preventDefault();
+						var moveY=e.pageY-topY;
+						item.style.top=moveY+item.offsetTop+'px';
+						if(moveY>0){
+							if((item.offsetHeight+item.offsetTop)>scroll.offsetHeight){
+								item.style.top=scroll.offsetHeight-item.offsetHeight+'px';
+							}
+						}else{
+							if((item.offsetTop)<=0){
+								item.style.top=0+'px';
+							}
+						}
+						topY=e.pageY;
+						var scale=item.offsetTop/(scroll.offsetHeight-item.offsetHeight);
+						var scrollContents=scale*(contentsH-containerH);
+						contents.style.top=-scrollContents+'px';
+					}
+					document.onmouseup=function(){
+						document.onmousemove=null;
+					}
+				}
+			}
+			function scrollWheel(box,item){
+				box.onmousewheel=function(e){
+					e=e||window.event;
+					e.preventDefault();
+					if(e.wheelDeltaY>0){
+						item.style.top=item.offsetTop-10+'px';
+						if(item.offsetTop<=0){
+								item.style.top=0+'px';
+							}
+					}else{
+						item.style.top=item.offsetTop+10+'px';
+						if((item.offsetHeight+item.offsetTop)>scroll.offsetHeight){
+								item.style.top=scroll.offsetHeight-item.offsetHeight+'px';
+							}
+					}
+					var scale=item.offsetTop/(scroll.offsetHeight-item.offsetHeight);
+					var scrollContents=scale*(contentsH-containerH);
+					contents.style.top=-scrollContents+'px';
+				}
+			}
+			function scrollBtn(ulscroll,item){
+				ulscroll.onclick=function(e){
+					var icoName=e.target.parentNode.className;
+					if(icoName=='ico up'){
+						item.style.top=item.offsetTop-10+'px';
+						if(item.offsetTop<=0){
+								item.style.top=0+'px';
+							}
+					}else if(icoName=='ico down'){
+						item.style.top=item.offsetTop+10+'px';
+						if((item.offsetHeight+item.offsetTop)>scroll.offsetHeight){
+								item.style.top=scroll.offsetHeight-item.offsetHeight+'px';
+							}
+					}
+					var scale=item.offsetTop/(scroll.offsetHeight-item.offsetHeight);
+					var scrollContents=scale*(contentsH-containerH);
+					contents.style.top=-scrollContents+'px';
+				}
+			}
+			init();
+		})()
+	</script>
+</body>
+</html>
